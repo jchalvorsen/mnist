@@ -19,7 +19,7 @@ def kd_reduce(func,seq):
 
 # Set this to the complete path to your mnist files.
 ## __mnist_path__ = "path/to/all/your/mnist/files"
-__mnist_path__ = "/Users/keithd/core/python/data/mnist/basics/"
+__mnist_path__ = "C:\mnist"
 
 # The load_mnist function is the main interface between the MNIST files and your machine-learning code.  It fetches
 # subsets of the entire training or test sets, as determined by the 'digits'
@@ -64,7 +64,7 @@ def load_mnist(dataset="training", digits=numpy.arange(10), path= __mnist_path__
     ind = [ k for k in range(size) if lbl[k] in digits ]
     N = len(ind)
 
-    images = numpy.zeros((N, rows, cols), dtype=numpy.uint8)
+    images = numpy.zeros((N, rows, cols), dtype=numpy.float)
     labels = numpy.zeros((N, 1), dtype=numpy.int8)
     for i in range(len(ind)):
         images[i] = numpy.array(img[ ind[i]*rows*cols : (ind[i]+1)*rows*cols ]).reshape((rows, cols))
@@ -84,6 +84,7 @@ def show_digit_image(image,cm='gray'):
     pyplot.ion()
     pyplot.figure()
     pyplot.imshow(image, cmap=pyplot.get_cmap(cm))
+    pyplot.draw()
 
 # *** Image Conversion ****
 # Conversions from arrays to (flat) lists, and the opposite conversion, called 'reconstruction'.
