@@ -12,31 +12,42 @@ class autoencoder():
     # nb = # bits, nh = # hidden nodes (in the single hidden layer)
     # lr = learning rate
 
-    def __init__(self,nb=3,nh=2,nr=3,lr=.1):
+    def __init__(self, structure, lr=.1):
         self.lrate = lr
-        self.build_ann(nb,nh,nr,lr)
+        self.build_ann(structure)
         
     def add_cases(self, cases):
         self.cases = cases
         
-    def add_compare_vectors(self, compare):
+    def add_classifications(self, classifications):
+        self.classifications = classifications
+        compare = []
+        for number in self.classifications:
+            values = np.zeros(10)
+            values[number] = 1
+            compare.append(values)
         self.compare = compare
 
-    def build_ann(self,nb,nh,nr,lr):
-        w1 = theano.shared(np.random.uniform(-.1,.1,size=(nb,nh)))
-        w2 = theano.shared(np.random.uniform(-.1,.1,size=(nh,nr)))
+    def build_ann(self,structure): 
+        w = []      # list of weight matrices
+        b = []      # list of bias vectors
+        x = []      # list of node values, first is input, last is output
         input = T.dvector('input')
-        values = T.dvector('values')
-        b1 = theano.shared(np.random.uniform(-.1,.1,size=nh))
-        b2 = theano.shared(np.random.uniform(-.1,.1,size=nr))
-        x1 = Tann.sigmoid(T.dot(input,w1) + b1)
-        x2 = Tann.sigmoid(T.dot(x1,w2) + b2)
-        error = T.sum((x2-values)**2)
-        params = [w1,b1,w2,b2]
+        compare = T.dvector('compare')
+        x.append(input)
+        for i in range(len(structure)-1):
+            dim1 = structure[i]
+            dim2 = structure[i+1]
+            w.append(theano.shared(np.random.uniform(-.1,.1,size=(dim1,dim2))))
+            b.append(theano.shared(np.random.uniform(-.1,.1,size=dim2)))
+            x.append(Tann.sigmoid(T.dot(x[i],w[i]) + b[i]))
+
+        error = T.sum((x[-1]-compare)**2)
+        params = w+b
         gradients = T.grad(error,params)
         backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
-        self.predictor = theano.function([input],[x2,x1])
-        self.trainer = theano.function([input, values],error,updates=backprop_acts)
+        self.predictor = theano.function([input],x[-1])
+        self.trainer = theano.function([input, compare],error,updates=backprop_acts)
 
     def do_training(self, epochs=100):
         errors = []
@@ -45,55 +56,33 @@ class autoencoder():
             error = 0
             for i in range(len(self.cases)):
                 error += self.trainer(self.cases[i], self.compare[i])
-            #for c in self.cases:
-            #    error += self.trainer(c, 7)
             errors.append(error)
         return errors
 
-    def do_testing(self):
-        hidden_activations = []
-        for c in self.cases:
-            _, hact = self.predictor(c)
-            hidden_activations.append(hact)
-        return hidden_activations
+    def do_testing(self, testset):
+        n = len(testset)
+        results = numpy.zeros((n, 1), dtype=numpy.int8)
+        for i in range(n):
+            results[i] = self.predictor(testset[i]).argmax()
+        return results
 
 
 data, numbers = load_mnist()
-#data = data[0:10000]
-#numbers = numbers[0:10000]
-
 
 flats = [flatten_image(data[i]/255) for i in range(len(data))]
 
 dim = len(flats[0])
 
-auto = autoencoder(dim, 20, 10)
+auto = autoencoder([dim, 20, 10])
 
 
 auto.add_cases(flats)
-# Build compare vectors:
-compare = []
-for number in numbers:
-    values = np.zeros(10)
-    values[number] = 1
-    compare.append(values)
-auto.add_compare_vectors(compare)
+auto.add_classifications(numbers)
 
 errors = auto.do_training(2)
 
-#plt.plot(errors)
-#plt.show()
 
 print(errors)
-"""
-flat = flats[10]
-show_digit_image(reconstruct_image(flat))
-print('Classification:', numbers[10])
-result = auto.predictor(flat)
-print(result)
-#plt.barh(range(10),result)
-#plt.show()
-"""
 
 # Get elements from test set:
 number_to_test = 10000
@@ -102,14 +91,28 @@ data = data[0:number_to_test]
 numbers = numbers[0:number_to_test]
 flats = [flatten_image(data[i]/255) for i in range(len(data))]
 
-correct = 0
+
+results = auto.do_testing(flats)
+#print(results)
+#print(np.asarray(numbers))
+
+mysum = np.sum(results == numbers)
+#print(mysum)
+
+"""
 for i in range(number_to_test):
     flat = flats[i]
     value = numbers[i][0]
-    result, _ = auto.predictor(flat)
+    result = auto.predictor(flat)
     index = result.argmax()
     if index == value:
         correct += 1
     #print('Guessed', index, ", correct was", value)
+"""
+print("Got ", mysum/number_to_test*100, "percent correct")
 
-print("Got ", correct/number_to_test*100, "percent correct")
+
+
+
+
+
