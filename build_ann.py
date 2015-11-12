@@ -7,23 +7,20 @@ import theano.tensor.nnet as Tann
 import matplotlib.pyplot as plt
 from mnist_basics import *
 
-
-def gen_all_bit_cases(num_bits):
-    def bits(n):
-        s = bin(n)[2:]
-        return [int(b) for b in '0'*(num_bits - len(s))+s]
-    return [bits(i) for i in range(2**num_bits)]
-
-
 class autoencoder():
 
     # nb = # bits, nh = # hidden nodes (in the single hidden layer)
     # lr = learning rate
 
     def __init__(self,nb=3,nh=2,nr=3,lr=.1):
-        #self.cases = gen_all_bit_cases(nb)
         self.lrate = lr
         self.build_ann(nb,nh,nr,lr)
+        
+    def add_cases(self, cases):
+        self.cases = cases
+        
+    def add_compare_vectors(self, compare):
+        self.compare = compare
 
     def build_ann(self,nb,nh,nr,lr):
         w1 = theano.shared(np.random.uniform(-.1,.1,size=(nb,nh)))
@@ -47,12 +44,7 @@ class autoencoder():
             print('In epoch number:', i)
             error = 0
             for i in range(len(self.cases)):
-                case = self.cases[i]
-                #print(max(case))
-                values = np.zeros(10)
-                values[self.numbers[i][0]] = 1
-                #print(self.numbers[i][0])
-                error += self.trainer(case, values)
+                error += self.trainer(self.cases[i], self.compare[i])
             #for c in self.cases:
             #    error += self.trainer(c, 7)
             errors.append(error)
@@ -66,26 +58,6 @@ class autoencoder():
         return hidden_activations
 
 
-"""
-auto = autoencoder(3,2)
-print(auto.cases)
-errors = auto.do_training(1000)
-plt.plot(errors)
-plt.show()
-
-case = auto.cases[1]
-print(case)
-result = auto.predictor(case)
-end = result[0]
-print(end)
-plt.barh(range(len(end)), end)
-plt.show()
-print(result)
-"""
-
-
-
-
 data, numbers = load_mnist()
 #data = data[0:10000]
 #numbers = numbers[0:10000]
@@ -96,10 +68,18 @@ flats = [flatten_image(data[i]/255) for i in range(len(data))]
 dim = len(flats[0])
 
 auto = autoencoder(dim, 20, 10)
-auto.cases = flats
-auto.numbers = numbers
 
-errors = auto.do_training(20)
+
+auto.add_cases(flats)
+# Build compare vectors:
+compare = []
+for number in numbers:
+    values = np.zeros(10)
+    values[number] = 1
+    compare.append(values)
+auto.add_compare_vectors(compare)
+
+errors = auto.do_training(2)
 
 #plt.plot(errors)
 #plt.show()
