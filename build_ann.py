@@ -5,9 +5,11 @@ import numpy as np
 import theano.tensor as T
 import theano.tensor.nnet as Tann
 import matplotlib.pyplot as plt
+import pickle
+import sys
 from mnist_basics import *
 
-class autoencoder():
+class ANN():
 
     # nb = # bits, nh = # hidden nodes (in the single hidden layer)
     # lr = learning rate
@@ -52,14 +54,14 @@ class autoencoder():
     def do_training(self, epochs=100):
         errors = []
         for i in range(epochs):
-            print('In epoch number:', i)
+            #print('In epoch number:', i)
             error = 0
             for i in range(len(self.cases)):
                 error += self.trainer(self.cases[i], self.compare[i])
             errors.append(error)
         return errors
 
-    def do_testing(self, testset):
+    def blind_testing(self, testset):
         n = len(testset)
         results = numpy.zeros((n, 1), dtype=numpy.int8)
         for i in range(n):
@@ -67,52 +69,45 @@ class autoencoder():
         return results
 
 
-data, numbers = load_mnist()
+def train_network(inner_structure, epochs):
+    data, numbers = load_mnist()
 
-flats = [flatten_image(data[i]/255) for i in range(len(data))]
+    flats = [flatten_image(data[i]/255) for i in range(len(data))]
 
-dim = len(flats[0])
+    dim_in = len(flats[0])
+    dim_out = 10
+    
+    nn = ANN([dim_in] + inner_structure + [dim_out])
+    nn.add_cases(flats)
+    nn.add_classifications(numbers)
 
-auto = autoencoder([dim, 20, 10])
+    errors = nn.do_training(epochs)
 
-
-auto.add_cases(flats)
-auto.add_classifications(numbers)
-
-errors = auto.do_training(2)
-
-
-print(errors)
-
-# Get elements from test set:
-number_to_test = 10000
-data, numbers = load_mnist('testing')
-data = data[0:number_to_test]
-numbers = numbers[0:number_to_test]
-flats = [flatten_image(data[i]/255) for i in range(len(data))]
+    #print(errors)
+    return nn
 
 
-results = auto.do_testing(flats)
-#print(results)
-#print(np.asarray(numbers))
-
-mysum = np.sum(results == numbers)
-#print(mysum)
-
-"""
-for i in range(number_to_test):
-    flat = flats[i]
-    value = numbers[i][0]
-    result = auto.predictor(flat)
-    index = result.argmax()
-    if index == value:
-        correct += 1
-    #print('Guessed', index, ", correct was", value)
-"""
-print("Got ", mysum/number_to_test*100, "percent correct")
+def test_network(nn):
+    # Get elements from test set:
+    data, numbers = load_mnist('testing')
+    flats = [flatten_image(data[i]/255) for i in range(len(data))]
+    results = nn.blind_testing(flats)
+    mysum = np.sum(results == numbers)
+    return mysum/len(data)*100
+    
 
 
 
+def main(argv):
+    epochs = int(argv[1]) if argv[1] else 2
+    inner_structure = list(map(int,argv[2:]))
+    
+    ANN = train_network(inner_structure, epochs)
+    percentage = test_network(ANN)
+    #print("Got ", percentage, "percent correct")
+    print("Percentage:", percentage, ", Epochs:", epochs, ", Inner_structure", inner_structure)
 
+main(sys.argv)
+    
 
 
