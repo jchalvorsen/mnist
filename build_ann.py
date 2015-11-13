@@ -4,9 +4,9 @@ import theano
 import numpy as np
 import theano.tensor as T
 import theano.tensor.nnet as Tann
-import matplotlib.pyplot as plt
 import pickle
 import sys
+import os.path
 from mnist_basics import *
 
 class ANN():
@@ -96,8 +96,19 @@ def test_network(nn):
     mysum = np.sum(results == numbers)
     return mysum/len(data)*100
     
-def pickle_neural_net(nn):
-    save_file = open('pickled_net', 'wb')  # this will overwrite current contents
+def pickle_neural_net(nn, filename):
+    # Ensure we get a unique name to save to
+    
+    counter = 1
+    save_file_name = filename + '-' + str(counter) 
+    while os.path.isfile(save_file_name):
+        counter += 1
+        save_file_name = filename + '-' + str(counter) 
+        
+
+    # Actually dump it to the file
+    save_file = open(save_file_name, 'wb')  # 'x' means we need a new file
+    
     pickle.dump(nn.structure, save_file, -1)
     for arg in nn.params:
         pickle.dump(arg.get_value(borrow=True), save_file, -1)
@@ -111,19 +122,8 @@ def restore_neural_net(filename):
     return nn
 
 
-def main(argv):
-    epochs = int(argv[1]) if argv[1] else 2
-    inner_structure = list(map(int,argv[2:]))
-    
-    ANN = train_network(inner_structure, epochs)
-    pickle_neural_net(ANN)
-    
-    #ANN = restore_neural_net('pickled_net')
-    percentage = test_network(ANN)
-    #print("Got ", percentage, "percent correct")
-    print("Percentage:", percentage, ", Epochs:", epochs, ", Inner_structure", inner_structure)
 
-main(sys.argv)
+
     
 
 

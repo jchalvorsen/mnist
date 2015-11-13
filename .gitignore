@@ -57,3 +57,12 @@ docs/_build/
 target/
 
 .idea/*
+
+# temp files linux
+*~
+
+# folder for pickled nets:
+pickled
+
+# file system:
+*.nfs*
