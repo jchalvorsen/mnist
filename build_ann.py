@@ -16,6 +16,7 @@ class ANN():
 
     def __init__(self, structure, lr=.1):
         self.lrate = lr
+        self.structure = structure
         self.build_ann(structure)
         
     def add_cases(self, cases):
@@ -45,9 +46,9 @@ class ANN():
             x.append(Tann.sigmoid(T.dot(x[i],w[i]) + b[i]))
 
         error = T.sum((x[-1]-compare)**2)
-        params = w+b
-        gradients = T.grad(error,params)
-        backprop_acts = [(p, p - self.lrate*g) for p,g in zip(params,gradients)]
+        self.params = w+b
+        gradients = T.grad(error,self.params)
+        backprop_acts = [(p, p - self.lrate*g) for p,g in zip(self.params,gradients)]
         self.predictor = theano.function([input],x[-1])
         self.trainer = theano.function([input, compare],error,updates=backprop_acts)
 
@@ -95,7 +96,19 @@ def test_network(nn):
     mysum = np.sum(results == numbers)
     return mysum/len(data)*100
     
+def pickle_neural_net(nn):
+    save_file = open('pickled_net', 'wb')  # this will overwrite current contents
+    pickle.dump(nn.structure, save_file, -1)
+    for arg in nn.params:
+        pickle.dump(arg.get_value(borrow=True), save_file, -1)
 
+def restore_neural_net(filename):
+    load_file = open(filename, 'rb')
+    structure = pickle.load(load_file)
+    nn = ANN(structure)
+    for arg in nn.params:
+        arg.set_value(pickle.load(load_file), borrow=True)
+    return nn
 
 
 def main(argv):
@@ -103,6 +116,9 @@ def main(argv):
     inner_structure = list(map(int,argv[2:]))
     
     ANN = train_network(inner_structure, epochs)
+    pickle_neural_net(ANN)
+    
+    #ANN = restore_neural_net('pickled_net')
     percentage = test_network(ANN)
     #print("Got ", percentage, "percent correct")
     print("Percentage:", percentage, ", Epochs:", epochs, ", Inner_structure", inner_structure)
