@@ -70,56 +70,17 @@ class ANN():
         return results
 
 
-def train_network(inner_structure, epochs):
-    data, numbers = load_mnist()
-
-    flats = [flatten_image(data[i]/255) for i in range(len(data))]
-
-    dim_in = len(flats[0])
-    dim_out = 10
-    
-    nn = ANN([dim_in] + inner_structure + [dim_out])
-    nn.add_cases(flats)
-    nn.add_classifications(numbers)
-
-    errors = nn.do_training(epochs)
-
-    #print(errors)
-    return nn
-
-
-def test_network(nn):
+def test_network(nn, testset = 'testing'):
     # Get elements from test set:
-    data, numbers = load_mnist('testing')
+    data, numbers = load_mnist(testset)
     flats = [flatten_image(data[i]/255) for i in range(len(data))]
     results = nn.blind_testing(flats)
     mysum = np.sum(results == numbers)
     return mysum/len(data)*100
     
-def pickle_neural_net(nn, filename):
-    # Ensure we get a unique name to save to
-    
-    counter = 1
-    save_file_name = filename + '-' + str(counter) 
-    while os.path.isfile(save_file_name):
-        counter += 1
-        save_file_name = filename + '-' + str(counter) 
-        
 
-    # Actually dump it to the file
-    save_file = open(save_file_name, 'wb')  # 'x' means we need a new file
-    
-    pickle.dump(nn.structure, save_file, -1)
-    for arg in nn.params:
-        pickle.dump(arg.get_value(borrow=True), save_file, -1)
 
-def restore_neural_net(filename):
-    load_file = open(filename, 'rb')
-    structure = pickle.load(load_file)
-    nn = ANN(structure)
-    for arg in nn.params:
-        arg.set_value(pickle.load(load_file), borrow=True)
-    return nn
+
 
 
 
