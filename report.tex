@@ -9,17 +9,72 @@
 \setlist{nosep}
 
 
-\author{Jon Christian Halvorsen}
-\title{ \textbf{ Ai Programming Project Module \# 3 }  \\
-Combining Best-First Search and Constraint-Satisfaction to Solve
-Nonograms }
+\author{Jon Christian Halvorsen and Anders Opskar Voldsund}
+\title{ \textbf{ AI Programming Project Module \# 5 }  \\
+Deep Learning for Image Classification }
 \date{\today}
 
 \begin{document}
 \maketitle
 
+\section{Testing Different ANNs}
+In the process of deciding upon five different ANNs, a number of different ANNs were tested somewhat rigorously. We ended up focusing primarily on the number of hidden layers as well as the number of hidden nodes in each of these. We tried two different activation functions, the sigmoid function and the tanh function. The tanh function was much more dependent on the learning rate, while the sigmoid function gave somewhat satisfying results for the whole range between 0.01 and 0.99. As we never managed to get as good results with the tanh function as we did with the sigmoid function, we ended up choosing the sigmoid function as our activation function. The error function used for backpropagation was the sum of squared errors.
 
+We noticed that although the results for one layer was good, two was even better. With three layers, or even four, the percentage of correctly classified cases tended to decrease, hence only one of our chosen ANNs got 3 layers. We also noticed that if you had two layers, it was better to have the largest number of hidden nodes in the first layer.
 
+\section{The Five Chosen ANNs}
+In all of the chosen ANNs we have used the sigmoid activation function, a sum of squared errors for the error function, and a learning rate of 0.10.
+\begin{enumerate}
+\item \quad 1 layer, 20 hidden nodes
+\item \quad 1 layer, 60 hidden nodes
+\item \quad 1 layer, 200 hidden nodes
+\item \quad 2 layers, 40 hidden nodes in 1st layer, 20 in 2nd
+\item \quad 3 layers, 200 in 1st, 60 in 2nd and 20 in 3rd
+\end{enumerate}
+
+\section{Training And Testing}
+We ran each of the five ANNs with 25 epochs 30 times, and proceeded with calculating the mean percentage of correctly classified cases for both the test data and the training data. The results can be seen in table \ref{tab:meanPercentage}.
+
+\subsection{Testing Of The ANNs}
+
+\begin{table}
+\centering
+\begin{tabular}{ c c c }\label{tab:meanPercentage}
+ANN & Training Data (\%) & Test Data (\%)
+ \\
+  \hline  
+  1 & 96.091 & 94.348\\
+  2 & 98.953 & 97.094\\
+  3 & 99.634 & 98.130\\
+  4 & 98.366 & 96.358\\
+  5 & 99.541 & 97.807\\
+  \hline\\
+\end{tabular}
+\end{table}
+
+We can see from the results in table \ref{tab:meanPercentage} that the percentage of correctly classified numbers is larger for the training data compared to the test data. This is expected as the weights in the neural network have been fitted to correctly classify the cases in the training data. It is also seen that when having one layer, the percentage increases for increasing number of hidden nodes in the layer.
+
+\section{Are The Means Of The ANNs Significantly Different?}
+To determine if two different ANNs have equal means, we do Welch's t-test. Given the hypothesis
+\begin{align}
+h_0: \textrm{The mean percentages of the ANNs are equal},
+\end{align}
+we can see if this holds true. 
+
+In our results of running the Welch's t-test we obtain a matrix $P$ where each element $P_{ij}$ gives the probability of $h_0$ being true for net number $i$ and net number $j$, i.e. the p-value saying if the mean percentages of net $i$ and $j$ is equal. If the p-value is low, typically below 0.01, we can reject $h_0$, otherwise we won't reject it.
+
+\begin{align} \label{tab:welchTable}
+P = \begin{pmatrix}
+1 & 1.40\cdot10^{-47} & 5.68\cdot10^{-56} & 1.19\cdot10^{-36} & 4.97\cdot10^{-53}\\
+1.40\cdot10^{-47} & 1 & 4.27\cdot10^{-48} & 6.07\cdot10^{-25} & 8.00\cdot10^{-35}\\
+5.68\cdot10^{-56} & 4.27\cdot10^{-48} & 1 & 2.54\cdot10^{-46} & 5.75\cdot10^{-20}\\
+1.19\cdot10^{-36} & 6.07\cdot10^{-25} & 2.54\cdot10^{-46} & 1 & 5.30\cdot10^{-40}\\
+4.97\cdot10^{-53} & 8.00\cdot10^{-35} & 5.75\cdot10^{-20} & 5.30\cdot10^{-40} & 1
+\end{pmatrix}
+\end{align}
+
+We see from table \ref{tab:welchTable} that all values $P_{ij}$ for $i \neq j$ are practically zero in every case, i.e. well below the significance level of 0.01, making us reject $h_0$ for every combination of nets. That means that we can conclude that there are in fact differences between all the nets, allowing us to conclude that some nets are better than others.
+
+This allows us to conclude that ANN number 2 will be the best ANN of the ones we have tested. This classified 99.6 \% of the training data correctly, and 98.1 \% of the test data correctly.
 
 \end{document}
-
