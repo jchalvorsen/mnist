@@ -66,3 +66,12 @@ pickled
 
 # file system:
 *.nfs*
+
+
+# latex:
+*.aux
+*.fdb*
+*.fls
+*.pdf
+*.gz
+
