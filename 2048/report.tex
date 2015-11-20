@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fullpage}
+\usepackage[utf8]{inputenc} % For å kunne skrive norske tegn.
+\usepackage{graphicx} % For å inkludere figurer.
+\usepackage{amsmath,amssymb} % Ekstra matematikkfunksjoner.
+\usepackage[]{algorithm2e}
+\usepackage{listings}
+\usepackage{enumitem}
+\setlist{nosep}
+
+
+\author{Jon Christian Halvorsen and Anders Opskar Voldsund}
+\title{ \textbf{ AI Programming Project Module \# 6 }  \\
+Deep Learning for Game Playing }
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section*{Designing Our ANN}
+For this module we based our ANN on our best ANN from the previous module. We used the sigmoid function as activation function and least squares as error function. For our net we used one layer with 12 nodes. We noticed that a learning rate of 0.2 worked well for our situation. The percentage of correct moves for this ANN gave around 40 $\%$, which we thought statistically significant compared to a random player with an average of 25 $\%$ correct moves.
+
+\section*{Two Different Representations}
+The two representations that we attempted are given below. We ran each of them 50 times and used Welch's T-test to justify which was the better.
+
+\subsection*{Representation I}
+In our first representation we simply represented each game state as a vector of length 16, where each element corresponded to the value on the board divided by some number. We chose 255 as this number. The idea is that we want to map the values to the range (0,1). As our neural network quite consistently give values of maximum 256, with some exceptions, we get all these values in the desired range.
+
+\subsubsection*{Results From Using I}
+
+\subsection*{Representation II}
+In our second representation we take our vector of length 16, and take $\textrm{log}_2$ of every element. As our neural network usually gives values up to 256, we choose to divide every element by 8, as $\textrm{log}_2(256) = 8$. This will map all elements below or equal to 256 in the range (0,1).
+
+\subsubsection*{Results From Using II}
+
+
+\section*{Analysis Of A 2048 Game}
+
+
+\end{document}
