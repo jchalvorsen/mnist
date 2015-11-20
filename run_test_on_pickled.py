@@ -20,6 +20,7 @@ def restore_neural_net(filename):
 
 
 
+
 def test_all():
     mypath = 'pickled'
     nets = ['25.20-','25.60-', '25.200-', '25.40.20-', '25.200.60.20-']
@@ -59,5 +60,20 @@ def test_all():
         #print("Percentage:", percentage, "Pickled_net:", filename, ", using", time, "seconds during training.")
         
         
-test_all()
+#test_all()
+
+
+# load and test the chosen network
+def load_and_test_chosen():
+    ann, time = restore_neural_net('pickled/25.200-12')
+    
+    # Do tests from mnist_basics:
+    minor_demo(ann)
+    
+    
+    
+load_and_test_chosen()
+
+
+
 

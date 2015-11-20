@@ -62,11 +62,11 @@ class ANN():
             errors.append(error)
         return errors
 
-    def blind_testing(self, testset):
+    def blind_test(self, testset):
         n = len(testset)
-        results = numpy.zeros((n, 1), dtype=numpy.int8)
+        results = []; #numpy.zeros((n, 1), dtype=numpy.int8)
         for i in range(n):
-            results[i] = self.predictor(testset[i]).argmax()
+            results.append(self.predictor(testset[i]).argmax())
         return results
 
 
@@ -74,7 +74,7 @@ def test_network(nn, testset = 'testing'):
     # Get elements from test set:
     data, numbers = load_mnist(testset)
     flats = [flatten_image(data[i]/255) for i in range(len(data))]
-    results = nn.blind_testing(flats)
+    results = nn.blind_test(flats)
     mysum = np.sum(results == numbers)
     return mysum/len(data)*100
     
