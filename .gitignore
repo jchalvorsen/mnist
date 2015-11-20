@@ -62,7 +62,8 @@ target/
 *~
 
 # folder for pickled nets:
-pickled
+#pickled
+comp*
 
 # file system:
 *.nfs*

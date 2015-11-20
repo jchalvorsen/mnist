@@ -4,6 +4,7 @@ from os.path import isfile, join
 from build_ann import *
 import scipy
 from math import log, ceil
+import numpy as np
 
 
 def restore_neural_net(filename):
@@ -21,17 +22,37 @@ def restore_neural_net(filename):
 
 def test_all():
     mypath = 'pickled'
-    onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) ]
-    onlyfiles.sort()
-
-
-    #filename = 'pickled/30.200-1'
-    nets = ['25.20', '25.40.20', '25.60']
-
-    for filename in onlyfiles:
-        for net in nets:
-            if filename.contains(net):
-                print(filename)
+    nets = ['25.20-','25.60-', '25.200-', '25.40.20-', '25.200.60.20-']
+    all_nets = []   
+    for net in nets:
+        onlyfiles = [ f for f in listdir(mypath) if isfile(join(mypath,f)) if net in f ]
+        all_nets.append(onlyfiles)
+        
+        
+    
+    # Calculate correct percentage for each net
+    percentages = []
+    for net in all_nets:
+        p1 =[]
+        for filename in net:
+            ANN, time = restore_neural_net(mypath + '/' + filename)
+            percentage = test_network(ANN, 'training')  # optional parameter to test on other set
+            print("Percentage:", percentage, "Pickled_net:", filename, ", using", time, "seconds during training.")
+            p1.append(percentage)
+        percentages.append(p1)
+    
+    # Calculate co-p matrix
+    n = len(percentages)
+    co_p = np.zeros((n, n))
+    for i in range(n):
+        for j in range(n):
+            _, co_p[i][j] = scipy.stats.ttest_ind(percentages[i], percentages[j], False)
+    print('Indexes:', nets)
+    print('Co-p-matrix:')
+    print(co_p)
+    print('Mean for nets:')
+    print([np.mean(l) for l in percentages])
+    #for filename in onlyfiles:
         #print(filename)
         #ANN, time = restore_neural_net(mypath + '/' + filename)
         #percentage = test_network(ANN)  # optional parameter to test on other set
@@ -39,9 +60,4 @@ def test_all():
         
         
 test_all()
-random = [5, 1, 2, 4]
-results = [6, 1, 6, 3]
 
-t, p = scipy.stats.ttest_ind(random, results)
-print(p)
-print(max(0,min(7, ceil(-log(p,10)))))
