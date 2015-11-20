@@ -76,7 +76,7 @@ class ANN():
 
     def blind_testing(self, testset):
         n = len(testset)
-        results = [];np.zeros((n, 1), dtype=np.int8)
+        results = [];#np.zeros((n, 1), dtype=np.int8)
         for i in range(n):
             test = self.predictor(testset[i])
             #print(test, test.argmax())

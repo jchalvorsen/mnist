@@ -30,5 +30,5 @@ def run_random():
     return np.amax(board)
     #return states, moves
 
-score = run_random()
-print score
+#score = run_random()
+#print score
