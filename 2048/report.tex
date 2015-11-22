@@ -6,6 +6,8 @@
 \usepackage[]{algorithm2e}
 \usepackage{listings}
 \usepackage{enumitem}
+\usepackage{caption}
+\usepackage{subcaption}
 \setlist{nosep}
 
 
@@ -88,6 +90,59 @@ Representation I gave
 
 
 \section*{Analysis Of A 2048 Game}
+We chose to take a closer look at one of the games played using representation I. In the first sequence of moves (as illustrated in figure \ref{fig:first_seq}) we see what may look like a stupid move in the start; not merging downwards so we get a 4-2-4 pattern. Although this move may seem stupid, it works out great, and at the end of the sequence we have a (quite) optimal tile placement.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/1}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/2}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/3}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/4}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/5}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/6}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/7}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.22\textwidth}
+        \includegraphics[width=\textwidth]{figures/8}
+    \end{subfigure}
+    \caption{First sequence of moves from our neural network playing 2048.}
+    \label{fig:first_seq}
+\end{figure}
+
+In our second example (as illustrated in figure \ref{fig:second_seq}) the neural net decide that it is advantageous to merge the two 64-tiles to get a 128-tile. This means however that we are stuck with a 2-tile between an 8-tile and the 128 tile. This in fact leads to the game ending quite soon after. We're not quite sure how we could have fixed this problem here, but our old search-bases algorithm would probably never chose a path in the searchtree that would end this way.
+
+\begin{figure}[h!]
+    \centering
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/64}
+    \end{subfigure}
+    ~
+    \begin{subfigure}[b]{0.45\textwidth}
+        \includegraphics[width=\textwidth]{figures/128}
+    \end{subfigure}
+    \caption{Second sequence of moves from our neural network playing 2048.}
+    \label{fig:second_seq}
+\end{figure}
 
 
 \end{document}
