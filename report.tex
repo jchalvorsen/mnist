@@ -61,7 +61,7 @@ h_0: \textrm{The mean percentages of the ANNs are equal},
 \end{align}
 we can see if this holds true. 
 
-In our results of running the Welch's t-test we obtain a matrix $P$ where each element $P_{ij}$ gives the probability of $h_0$ being true for net number $i$ and net number $j$, i.e. the p-value saying if the mean percentages of net $i$ and $j$ is equal. If the p-value is low, typically below 0.01, we can reject $h_0$, otherwise we won't reject it.
+In our results of running the Welch's t-test we obtain a matrix $P$ where each element $P_{ij}$ gives the p-value of doing Welch's t-test for neural net number $i$ and $j$ using the test set as measure. The results were similar for the training set aswell. If the p-value is low, typically below 0.01, we can reject $h_0$, otherwise we won't reject it.
 
 \begin{align} \label{tab:welchTable}
 P = \begin{pmatrix}
@@ -75,6 +75,6 @@ P = \begin{pmatrix}
 
 We see from table \ref{tab:welchTable} that all values $P_{ij}$ for $i \neq j$ are practically zero in every case, i.e. well below the significance level of 0.01, making us reject $h_0$ for every combination of nets. That means that we can conclude that there are in fact differences between all the nets, allowing us to conclude that some nets are better than others.
 
-This allows us to conclude that ANN number 2 will be the best ANN of the ones we have tested. This classified 99.6 \% of the training data correctly, and 98.1 \% of the test data correctly.
+This allows us to conclude that ANN number 3 will be the best ANN of the ones we have tested. This classified 99.6 \% of the training data correctly, and 98.1 \% of the test data correctly.
 
 \end{document}
