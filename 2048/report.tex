@@ -26,10 +26,48 @@ The two representations that we attempted are given below. We ran each of them 5
 \subsection*{Representation I}
 In our first representation we simply represented each game state as a vector of length 16, where each element corresponded to the value on the board divided by some number. We chose 255 as this number. The idea is that we want to map the values to the range (0,1). As our neural network quite consistently give values of maximum 256, with some exceptions, we get all these values in the desired range.
 
+
+\begin{align*}
+\begin{pmatrix}
+  2  &  4 &   8 &  4\\
+  2  &  8 &  16 & 32 \\
+  8  & 16 &  64 & 128 \\
+  16 & 64 & 256 & 512
+\end{pmatrix}
+\rightarrow
+\frac{1}{255}
+\begin{pmatrix}
+  2  &  4 &   8 &  4\\
+  2  &  8 &  16 & 32 \\
+  8  & 16 &  64 & 128 \\
+  16 & 64 & 256 & 512
+\end{pmatrix}
+\end{align*}
+
+
 \subsubsection*{Results From Using I}
 
 \subsection*{Representation II}
 In our second representation we take our vector of length 16, and take $\textrm{log}_2$ of every element. As our neural network usually gives values up to 256, we choose to divide every element by 8, as $\textrm{log}_2(256) = 8$. This will map all elements below or equal to 256 in the range (0,1).
+
+\begin{align*}
+\begin{pmatrix}
+  2  &  4 &   8 &  4\\
+  2  &  8 &  16 & 32 \\
+  8  & 16 &  64 & 128 \\
+  16 & 64 & 256 & 512
+\end{pmatrix}
+\rightarrow
+\frac{1}{8}
+\begin{pmatrix}
+  1 & 2 & 3 & 2 \\
+  1 & 3 & 4 & 5 \\
+  3 & 4 & 6 & 7 \\
+  4 & 6 & 8 & 9
+\end{pmatrix}
+\end{align*}
+
+
 
 \subsubsection*{Results From Using II}
 
