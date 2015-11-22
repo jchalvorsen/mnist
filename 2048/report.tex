@@ -18,23 +18,23 @@ Deep Learning for Game Playing }
 \maketitle
 
 \section*{Designing Our ANN}
-For this module we based our ANN on our best ANN from the previous module. We used the sigmoid function as activation function and least squares as error function. For our net we used one layer with 12 nodes. We noticed that a learning rate of 0.2 worked well for our situation. The percentage of correct moves for this ANN gave around 40 $\%$, which we thought statistically significant compared to a random player with an average of 25 $\%$ correct moves.
+For this module we largely based our ANN on our best ANN from the previous module. We used the sigmoid function as activation function and least squares as error function. For our net we based our choice on the previous module, where we used 1 layer, and a number of hidden nodes between the number of elements in the output, and the number of elements in the output. Thus we needed a number inbetween 16 and 4. We chose 12, which proved to work quite well. After doing some experimentation, we noticed that a learning rate of 0.2 worked well for our situation. A lower learning rate, e.g. 0.10 performed significantly worse. The percentage of correct moves for this ANN gave around 40 $\%$, which we thought statistically significant compared to a random player with an average of 25 $\%$ correct moves.
 
 \section*{Generating Training Data}
-To generate our training data we ran our old 2048 algorithm, but only recorded data for every game which obtained a highest tile above or equal to 1024. For these games we saved every state and every move performed, until we had above 100 000 different states and different moves. This resulted in 101 221 different states where the percentage of moves are recorded in Table \ref{tab:percantage}.
+To generate our training data we ran our old 2048 algorithm, but only recorded data for every game which obtained a highest tile above or equal to 1024. For these games we saved every state and every move performed, until we had above 100 000 different states and different moves. This resulted in 101 221 different states where the percentage of moves are recorded in Table \ref{tab:percentage}.
 
 \begin{table}[h!]
 \centering
 \caption{Move percentages for the training data}
 \begin{tabular}{cc}
-move & percentage \\
+Move & Percentage \\
 \hline
 left & 28.3 $\%$ \\
 up & 24.9 $\%$ \\
 right & 21.5 $\%$ \\
 down & 25.3 $\%$
 \end{tabular}
-\label{tab:percantage}
+\label{tab:percentage}
 \end{table}
 
 \section*{Two Different Representations}
@@ -81,13 +81,33 @@ In our second representation we take our vector of length 16, and take $\textrm{
 \end{align*}
 
 \subsection*{Comparing Representation I and II}
-We performed 50 runs of the ANN-based player with representation I and II, as well as 50 runs of the random player. For these 50 runs, the random player averaged a maximum tile of 102.4. Representation I achieved an average maximum tile of 225, while representation II achieved an average maximum tile of 151.
+We performed 50 runs of the ANN-based player with representation I and II, as well as 50 runs of the random player. The $p$-value has the hypothesis
+\begin{align}
+h_0: \textrm{The two players have equal average maximum tile}
+\end{align}
 
-Representation I gave  
+The results are presented in table \ref{tab:comparisonRepIandII}.
 
+\begin{table}[h!]
+\centering
+\caption{Comparison of representation I and II}
+\begin{tabular}{lccc}
+Type & Average Maximum Tile & $p$-value & Demo Points\\
+\hline
+Random & 102.4 & - & - \\
+Representation I & 225 & 0.0000000790 & 7 \\
+Representation II & 151 & 0.0011607131 & 3\\
+\hline
+Comparison RI and RII & - & 0.0019655100 & 3
+\end{tabular}
+\label{tab:comparisonRepIandII}
+\end{table}
+
+As we can see from table \ref{tab:comparisonRepIandII} both representation I and representation II have $p$-values that indicate that $h_0$ is false, i.e. that the RI player and the RII player will beat the random player. We also take notice that the $p$-value for the comparison between RI and RII is very low, indicating that there will be a statistically significant difference between the two representations, i.e. they do not perform equally well. 
+
+As the average maximum tile and number of demo points is higher, as well as lower $p$-value, we choose representation I.
 
 
 \section*{Analysis Of A 2048 Game}
-
 
 \end{document}
