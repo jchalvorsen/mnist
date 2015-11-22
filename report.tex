@@ -39,7 +39,8 @@ We ran each of the five ANNs with 25 epochs 30 times, and proceeded with calcula
 
 \begin{table}
 \centering
-\begin{tabular}{ c c c }\label{tab:meanPercentage}
+\caption{Results for different ANNs on training and test data sets.}
+\begin{tabular}{ c c c }
 ANN & Training Data (\%) & Test Data (\%)
  \\
   \hline  
@@ -49,6 +50,7 @@ ANN & Training Data (\%) & Test Data (\%)
   4 & 98.366 & 96.358\\
   5 & 99.541 & 97.807\\
   \hline\\
+  \label{tab:meanPercentage}
 \end{tabular}
 \end{table}
 
@@ -63,7 +65,8 @@ we can see if this holds true.
 
 In our results of running the Welch's t-test we obtain a matrix $P$ where each element $P_{ij}$ gives the p-value of doing Welch's t-test for neural net number $i$ and $j$ using the test set as measure. The results were similar for the training set aswell. If the p-value is low, typically below 0.01, we can reject $h_0$, otherwise we won't reject it.
 
-\begin{align} \label{tab:welchTable}
+\begin{align}
+\label{tab:welchTable}
 P = \begin{pmatrix}
 1 & 1.40\cdot10^{-47} & 5.68\cdot10^{-56} & 1.19\cdot10^{-36} & 4.97\cdot10^{-53}\\
 1.40\cdot10^{-47} & 1 & 4.27\cdot10^{-48} & 6.07\cdot10^{-25} & 8.00\cdot10^{-35}\\
