@@ -2,6 +2,7 @@ from build_ann import *
 import pickle
 import time
 import scipy
+import copy
 
 
 from solve2048 import *
@@ -66,23 +67,14 @@ def t_train(epochs, inner_structure):
     return nn, errors
     
 
-    
-
-
 def run_nn(ann, do_log):
     board = np.zeros((GRID_LEN, GRID_LEN), dtype=int)
     place_new_tile(board)
     boards = [board]
     
     while True:
-        #print(board)
         board_2 = take_2_log(board, do_log)
-        #print(board)
-        #print(board_2)
-        #print("")
         flat = flatten_image(board_2)
-        #print(flat)
-        #print(max(flat))
         predicted = ann.predictor(flat)
         
         m = predicted.argmax()
@@ -97,7 +89,7 @@ def run_nn(ann, do_log):
 
         
         board = new_board
-        boards.append(board)
+        boards.append(copy.deepcopy(board))
 
         place_new_tile(board)
         boards.append(board)
@@ -107,51 +99,51 @@ def run_nn(ann, do_log):
             break
 
     return np.amax(board), boards
+
+
+def save_to_file(boards, filename):
+    np.save(filename, boards)
     
-#for i in range(100):    
-do_log = False
-epochs = 4
-inner_structure = [12]     
-
-nn, errors = train_network(inner_structure, epochs, do_log)
-
-score, boards = run_nn(nn, do_log)
-print(len(boards))
-print(score)
-
-outfile = '2048game'
-np.save(outfile, boards)
-
-#for board in boards:
-#    np.save(outfile, board)
 
 
+def test_all():   
+    do_log = False
+    epochs = 4
+    inner_structure = [12]     
+
+    # Train two different networks with different preprocessing
+    nn, errors = train_network(inner_structure, epochs, do_log)
+    nn2, errors2 = train_network(inner_structure, epochs, not do_log)
+    print(errors)
+    print(errors2)
+
+    # Score both networks + random player k times:
+    scores = []
+    scores2 = []
+    randoms = []
+    k = 500
+    for i in range(k):
+        print(i)
+        scores.append(run_nn(nn, do_log)[0])
+        scores2.append(run_nn(nn2, not do_log)[0])
+        randoms.append(run_random())
+
+    print("Average of score for normal system:", np.average(scores))
+    print("Average of score for log system:", np.average(scores2))
+    print("Average of score for random system:", np.average(randoms))
+
+    print(welch(randoms, scores))
 
 
-
-"""
-nn2, errors2 = train_network(inner_structure, epochs, not do_log)
-print(errors)
-print(errors2)
-
-scores = []
-scores2 = []
-randoms = []
-test_number = 50
-for i in range(test_number):
-    scores.append(run_nn(nn, do_log))
-    scores2.append(run_nn(nn2, not do_log))
-    randoms.append(run_random())
-print(scores)
-print(np.var(scores))
-print(scores2)
-print(np.var(scores2))
-final_score = welch(randoms, scores)
-final_score2 = welch(randoms, scores2)
-final_diff = welch(scores2, scores)
-print("Final scores", final_score)
-print("Final scores2", final_score2)
-print("Final diff", final_diff)   
-"""
- 
+def test_and_save_one():
+    do_log = False
+    epochs = 1
+    inner_structure = [12]     
+    nn, errors = train_network(inner_structure, epochs, do_log)
+    score, boards = run_nn(nn, do_log)
+    print("Score:", score)
+    save_to_file(boards, '2048game')
+    
+#test_and_save_one()
+test_all()    
 
