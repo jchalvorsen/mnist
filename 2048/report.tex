@@ -20,10 +20,10 @@ Deep Learning for Game Playing }
 \maketitle
 
 \section*{Designing Our ANN}
-For this module we largely based our ANN on our best ANN from the previous module. We used the sigmoid function as activation function and least squares as error function. For our net we based our choice on the previous module, where we used 1 layer, and a number of hidden nodes between the number of elements in the output, and the number of elements in the output. Thus we needed a number inbetween 16 and 4. We chose 12, which proved to work quite well. After doing some experimentation, we noticed that a learning rate of 0.2 worked well for our situation. A lower learning rate, e.g. 0.10 performed significantly worse. The percentage of correct moves for this ANN gave around 40 $\%$, which we thought statistically significant compared to a random player with an average of 25 $\%$ correct moves.
+For this module we largely based our ANN on our best ANN from the previous module. We used the sigmoid function as activation function and least squares as error function. For our net we based our choice on the previous module, where we used 1 layer, and a number of hidden nodes between the number of elements in the output, and the number of elements in the output. Thus we needed a number inbetween 16 and 4. We chose 12, which proved to work quite well. After doing some experimentation, we noticed that a learning rate of 0.2 worked well for our situation. A lower learning rate, e.g. 0.10 performed significantly worse. The percentage of correct moves for this ANN gave around 40 $\%$, which we thought statistically significant compared to a random player with an average of 25 $\%$ correct moves. When comparing the mean result over 500 runs of this neural network with that of a random player (neural network got around double the score) we had convincing results and therefore decided to not experiment much more with the network design.
 
 \section*{Generating Training Data}
-To generate our training data we ran our old 2048 algorithm, but only recorded data for every game which obtained a highest tile above or equal to 1024. For these games we saved every state and every move performed, until we had above 100 000 different states and different moves. This resulted in 101 221 different states where the percentage of moves are recorded in Table \ref{tab:percentage}.
+To generate our training data we ran our old search-based 2048 algorithm, but only recorded data for every game which obtained a highest tile above or equal to 1024. For these games we saved every state and every move performed, until we had above 100 000 different states and different moves. This resulted in 101 221 different states where the percentage of moves are recorded in Table \ref{tab:percentage}.
 
 \begin{table}[h!]
 \centering
@@ -40,7 +40,7 @@ down & 25.3 $\%$
 \end{table}
 
 \section*{Two Different Representations}
-The two representations that we attempted are given below. We ran each of them 50 times and used Welch's T-test to justify which was the better.
+The two representations that we attempted are given below. We ran each of them 50 times and used Welch's T-test to justify which was the better. We also took a look on the mean value of running a lot of simulations with the different neural networks.
 
 \subsection*{Representation I}
 In our first representation we simply represented each game state as a vector of length 16, where each element corresponded to the value on the board divided by some number. We chose 255 as this number (we also tried with 256, but seemed to get better results using 255. We have no idea why). The idea is that we want to map the values to the range (0,1). As our neural network quite consistently give values of maximum 256, with some exceptions, we get all these values in the desired range. An example transformation is shown below:
@@ -109,6 +109,24 @@ As we can see from table \ref{tab:comparisonRepIandII} both representation I and
 
 As the average maximum tile and number of demo points is higher, as well as lower $p$-value, we choose representation I.
 
+After doing this comparison it came to our attention that the test method may have been flawed. Therefore we constructed another test: We trained the networks the same as before and then tested each of them (also random player) 500 times and calculated the mean values. These values are presented in Table \ref{tab:mean}.
+
+\begin{table}[h!]
+\centering
+\caption{Average maximum tiles for 500 runs of 2048 after training the neural networks.}
+\begin{tabular}{cc}
+Type & Average Maximum Tile \\
+\hline
+Random & 102.7 \\
+Representation I & 217.2 \\
+Representation II & 169.2
+\end{tabular}
+\label{tab:mean}
+\end{table}
+
+This result makes us confident that network number 1 is the clear winner of this competition.
+
+
 \section*{Analysis Of A 2048 Game}
 We chose to take a closer look at one of the games played using representation I. In the first sequence of moves (as illustrated in figure \ref{fig:first_seq}) we see what may look like a stupid move in the start; not merging downwards so we get a 4-2-4 pattern. Although this move may seem stupid, it works out great, and at the end of the sequence we have a (quite) optimal tile placement.
 
@@ -129,7 +147,7 @@ We chose to take a closer look at one of the games played using representation I
     \begin{subfigure}[b]{0.22\textwidth}
         \includegraphics[width=\textwidth]{figures/4}
     \end{subfigure}
-    \vfill
+    \vspace{0.1cm}
     \begin{subfigure}[b]{0.22\textwidth}
         \includegraphics[width=\textwidth]{figures/5}
     \end{subfigure}
@@ -164,5 +182,7 @@ In our second example (as illustrated in figure \ref{fig:second_seq}) the neural
     \label{fig:second_seq}
 \end{figure}
 
+\section*{Conclusion}
+We were able to generate and train a (pretty) simple neural network that have a decent performance. We could however not make it better than the search-based algorithm we developed earlier in the course. This could be seen as reasonable as it would take a lot of work to make the networks better than their training data. Perhaps limiting our training data to only the really successful realizations from the search-bases algorithm would yield better results.
 
 \end{document}
