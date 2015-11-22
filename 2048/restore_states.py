@@ -23,11 +23,13 @@ states, moves = restore_pickled_states('test')
 
 
 all_moves =  [0, 0, 0, 0]
+n = len(moves)
 
 for move in moves:
-    all_moves[move] += 1
+    all_moves[move] += 1/n
     
 print(all_moves)
+print(n)
     
 #plot_game(states, moves)
         
