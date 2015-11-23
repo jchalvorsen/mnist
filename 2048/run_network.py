@@ -3,7 +3,8 @@ import pickle
 import time
 import scipy
 import copy
-
+import pylab 
+import math
 
 from solve2048 import *
 from random_player import *
@@ -104,7 +105,26 @@ def run_nn(ann, do_log):
 def save_to_file(boards, filename):
     np.save(filename, boards)
     
+def test_50():   
+    do_log = False
+    epochs = 4
+    inner_structure = [12]     
 
+    nn, errors = train_network(inner_structure, epochs, do_log)
+
+
+    # Score both networks + random player k times:
+    scores = []
+    randoms = []
+    k = 50
+    for i in range(k):
+        scores.append(run_nn(nn, do_log)[0])
+        randoms.append(run_random())
+
+    print("Average of score for normal system:", np.average(scores))
+    print("Average of score for random system:", np.average(randoms))
+
+    return scores, randoms
 
 def test_all():   
     do_log = False
@@ -137,13 +157,27 @@ def test_all():
 
 def test_and_save_one():
     do_log = False
-    epochs = 1
+    epochs = 4
     inner_structure = [12]     
     nn, errors = train_network(inner_structure, epochs, do_log)
     score, boards = run_nn(nn, do_log)
-    print("Score:", score)
+    #print("Score:", score)
     save_to_file(boards, '2048game')
-    
+    return score
+
+ 
+ 
+ 
+for i in range(10): 
+    scores, randoms = test_50() 
+    p = scipy.stats.ttest_ind(np.log2(scores), np.log2(randoms), equal_var=False)[1]
+    p2 = scipy.stats.ttest_ind(scores, randoms, equal_var=False)[1]
+    score = max(0, math.ceil(-math.log(p,10)))
+    score2 = max(0, math.ceil(-math.log(p2,10)))
+    print(p, p2, score, score2)
+    scipy.stats.probplot(np.log2(scores), dist="norm", plot=pylab)
+    pylab.show() 
 #test_and_save_one()
-test_all()    
+
+#test_all()    
 
